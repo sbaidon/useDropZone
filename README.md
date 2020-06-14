@@ -18,8 +18,12 @@ The custom hook returns two things, a boolean flag which indicates if an item is
 
 ```javascript
 function Component() {
+  function onDrop(files) {
+    // Do whatever you need with files!
+    console.log(files)
+  }
+
   const [isOver, handlers] = useDropZone(onDrop)
-  isOverDropZone = isOver
 
   return (
     <div {...handlers}>
