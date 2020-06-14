@@ -6,7 +6,7 @@ export interface DropHandlers {
   onDrop: DragEventHandler
 }
 
-function useDropZone(onFiles: (files: File[]) => void): [Boolean, DropHandlers] {
+function useDropZone(onDrop: (files: File[] | null) => void): [Boolean, DropHandlers] {
   const [isOverDropZone, setIsOverDropZone] = useState<Boolean>(false)
   const counter = useRef(0)
 
@@ -15,6 +15,7 @@ function useDropZone(onFiles: (files: File[]) => void): [Boolean, DropHandlers] 
       onDragEnter(event) {
         event.preventDefault()
         counter.current++
+        setIsOverDropZone(true)
       },
       onDragLeave(event) {
         event.preventDefault()
@@ -27,10 +28,15 @@ function useDropZone(onFiles: (files: File[]) => void): [Boolean, DropHandlers] 
         counter.current = 0
         setIsOverDropZone(false)
         event.persist()
-        onFiles(Array.from(event?.dataTransfer?.files ?? []))
+        const files = Array.from(event?.dataTransfer?.files ?? [])
+        if (files.length === 0) {
+          onDrop(null)
+          return
+        }
+        onDrop(files)
       }
     }),
-    [onFiles]
+    [onDrop]
   )
 
   return [isOverDropZone, handlers]
